@@ -1,24 +1,45 @@
-# SimpleStorage : Smart Contract Solidity + CI/CD GitHub Actions + Sepolia
+# SimpleStorage : Smart Contract, CI/CD et déploiement sur Sepolia
 
-Projet du devoir « IA, Blockchain, DevOps & Infrastructure ».
+Projet du Master AI & Digital Economy (module IA, Blockchain, DevOps & Infrastructure).
+Un contrat Solidity simple est testé automatiquement, puis déployé sur le réseau de test **Sepolia** via **GitHub Actions**.
 
-## Contenu
-- `contracts/SimpleStorage.sol` : contrat (valeur + propriétaire, événement, erreur personnalisée)
-- `test/SimpleStorage.test.js` : 3 tests Hardhat (init, écriture propriétaire, refus non-propriétaire)
-- `scripts/deploy.js` : script de déploiement
-- `.github/workflows/ci-cd.yml` : job `test` (compile + tests) puis job `deploy` (Sepolia, uniquement sur `main`)
+## Preuve de déploiement
 
-## Utilisation locale
+- **Réseau :** Sepolia (chainId 11155111)
+- **Adresse du contrat :** `0x4d2AaA299dF6ff7E020E8c4a671c1444a89c8ad9`
+- **Etherscan :** https://sepolia.etherscan.io/address/0x4d2AaA299dF6ff7E020E8c4a671c1444a89c8ad9
+
+## Structure
+
+| Dossier / fichier | Rôle |
+|---|---|
+| `contracts/` | Contrat Solidity `SimpleStorage` |
+| `test/` | Tests automatisés (Hardhat) |
+| `scripts/deploy.js` | Script de déploiement |
+| `hardhat.config.js` | Configuration du réseau Sepolia |
+| `.github/workflows/ci-cd.yml` | Pipeline CI/CD |
+
+## Pipeline CI/CD
+
+1. **test** : installation, compilation et tests à chaque push.
+2. **deploy** : exécuté uniquement sur `main`, après réussite des tests ; déploie sur Sepolia.
+3. Le journal de déploiement est conservé comme artifact (`deploy-log`).
+
+## Secrets GitHub requis
+
+| Nom | Contenu |
+|---|---|
+| `SEPOLIA_RPC_URL` | URL RPC d'un nœud Sepolia |
+| `DEPLOYER_PRIVATE_KEY` | Clé privée d'un portefeuille de test dédié |
+
+## Exécution locale
+
 ```bash
-npm install
+npm ci
+npx hardhat compile
 npx hardhat test
 ```
 
-## Mise en place du déploiement sur Sepolia
-1. Créer un compte RPC (Alchemy / Infura) et récupérer l'URL Sepolia.
-2. Créer un portefeuille **dédié aux tests** (jamais votre portefeuille personnel) et l'alimenter en ETH Sepolia via un faucet.
-3. Dans GitHub : *Settings → Secrets and variables → Actions*, ajouter :
-   - `SEPOLIA_RPC_URL`
-   - `DEPLOYER_PRIVATE_KEY`
-4. (Optionnel) Créer l'environnement `sepolia` avec une approbation manuelle.
-5. Pousser sur `main` : le workflow teste puis déploie. L'adresse du contrat est affichée dans les logs du job `deploy` ; la vérifier sur https://sepolia.etherscan.io et capturer la preuve.
+## Sécurité
+
+Les clés ne sont jamais écrites dans le code : elles passent par les secrets GitHub. Utilisez uniquement un portefeuille de test.
