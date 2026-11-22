@@ -6,6 +6,10 @@ async function main() {
     throw new Error("Aucun compte : DEPLOYER_PRIVATE_KEY est vide ou invalide");
   }
   console.log("Deployer :", deployer.address);
+    const net = await ethers.provider.getNetwork();
+  const bal = await ethers.provider.getBalance(deployer.address);
+  console.log("chainId :", net.chainId.toString(), "(Sepolia = 11155111)");
+  console.log("Solde :", ethers.formatEther(bal), "ETH");
   const factory = await ethers.getContractFactory("SimpleStorage");
   const c = await factory.deploy(42);
   await c.waitForDeployment();
